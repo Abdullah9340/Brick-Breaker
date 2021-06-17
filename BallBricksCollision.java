@@ -7,14 +7,6 @@ public class BallBricksCollision {
     public BallBricksCollision() {
     }
 
-    /**
-     * Loops through the array of bricks and checks if any of the bricks collides
-     * with the ball.
-     *
-     * @param bricks Array of the bricks
-     * @param ball   The ball which collision is being inspected
-     * @param player Player who is playing the game
-     */
     public void checkCollisions(ArrayList<Brick> bricks, Ball ball, Player player) {
         for (int i = bricks.size() - 1; i >= 0; i--) {
             checkCollision(ball, bricks.get(i), player);
@@ -24,16 +16,6 @@ public class BallBricksCollision {
         }
     }
 
-    /**
-     * Method for checking collision between a Brick and the ball.
-     * <p>
-     * If ball is colliding with a brick, check which side of the ball collides and
-     * reverse the correct movement adjustment.
-     *
-     * @param ball   Ball which is being inspected
-     * @param brick  Brick which is being inspected
-     * @param player Player who is playing
-     */
     private void checkCollision(Ball ball, Brick brick, Player player) {
 
         Rectangle ballRect = new Rectangle(ball.getX(), ball.getY(), ball.getWidth(), ball.getHeight());
