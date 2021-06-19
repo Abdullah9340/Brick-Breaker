@@ -4,9 +4,6 @@ import java.util.ArrayList;
 
 public class BallBricksCollision {
 
-    public BallBricksCollision() {
-    }
-
     public void checkCollisions(ArrayList<Brick> bricks, Ball ball, Player player) {
         for (int i = bricks.size() - 1; i >= 0; i--) {
             checkCollision(ball, bricks.get(i), player);
@@ -33,14 +30,19 @@ public class BallBricksCollision {
         if (ballRect.intersects(brickRect)) {
 
             if (brickRect.contains(ballRight)) {
-                ball.setXVel(ball.getxVelocity() * -1);
+                ball.setXVel();
             } else if (brickRect.contains(ballLeft)) {
-                ball.setXVel(ball.getxVelocity() * -1);
+                ball.setXVel();
             }
             if (brickRect.contains(ballTop)) {
                 ball.setYVel();
             } else if (brickRect.contains(ballBottom)) {
                 ball.setYVel();
+            }
+            if (!brickRect.contains(ballTop) && !brickRect.contains(ballBottom) && !brickRect.contains(ballRight)
+                    && !brickRect.contains(ballLeft)) {
+                ball.setYVel();
+                ball.setXVel();
             }
             brick.setDurability(brick.getDurability() - 1);
             brick.setColor();

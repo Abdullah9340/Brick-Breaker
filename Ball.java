@@ -46,11 +46,26 @@ public class Ball {
         return height;
     }
 
+    public void setXVel() {
+        if (xVelocity > 0) {
+            xVelocity = 3;
+        } else {
+            xVelocity = -3;
+        }
+        xVelocity *= -1;
+        xVelocity += (int) ((Math.random() * 2) - 1);
+    }
+
     public void setXVel(int xVel) {
         xVelocity = xVel;
+        xVelocity += (int) (Math.random() * -1) + 1;
     }
 
     public void setYVel() {
         yVelocity *= -1;
+    }
+
+    public void setX(int x) {
+        this.x = x;
     }
 }

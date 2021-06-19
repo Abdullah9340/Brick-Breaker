@@ -17,7 +17,7 @@ public class Game implements Runnable, KeyListener {
     private String title;
     private int WIDTH, HEIGHT, FPS = 60;
     private boolean running = false;
-    private boolean isDead = true;
+    private boolean isDead = true, isMenu = true;
     private int lives = 3;
 
     private Thread thread;
@@ -43,44 +43,46 @@ public class Game implements Runnable, KeyListener {
     }
 
     public void update() {
-        player.update();
-        for (int i = balls.size() - 1; i >= 0; i--) {
-            Ball b = balls.get(i);
-            b.update();
-            collisionCheck.checkCollisions(bricks, b, player);
-            if (b.getX() < 0) {
-                b.setXVel(b.getxVelocity() * -1);
-            }
-            // Hits Right Wall
-            if (b.getX() > 800 - b.getWidth()) {
-                b.setXVel(b.getxVelocity() * -1);
-            }
-            // Hits Top
-            if (b.getY() < 0) {
-                b.setYVel();
-            }
-            // Hits Player paddle
-            if (b.getX() >= player.getX() && b.getX() <= player.getX() + player.getWidth()) {
-                if (b.getY() + b.getHeight() == player.getY() + 20) {
+        if (!isMenu) {
+            player.update();
+            for (int i = balls.size() - 1; i >= 0; i--) {
+                Ball b = balls.get(i);
+                b.update();
+                collisionCheck.checkCollisions(bricks, b, player);
+                if (b.getX() < 0) {
+                    b.setXVel();
+                }
+                // Hits Right Wall
+                if (b.getX() > 800 - b.getWidth()) {
+                    b.setXVel();
+                    b.setX(800 - b.getWidth() - 5);
+                }
+                // Hits Top
+                if (b.getY() < 0) {
                     b.setYVel();
-                    int zoneWidth = player.getWidth() / 2;
-                    int zoneOne = player.getX() + zoneWidth;
-                    int zoneTwo = zoneOne + zoneWidth;
+                }
+                // Hits Player paddle
+                if (b.getX() >= player.getX() && b.getX() <= player.getX() + player.getWidth()) {
+                    if (b.getY() + b.getHeight() == player.getY() + 20) {
+                        b.setYVel();
+                        int zoneWidth = player.getWidth() / 2;
+                        int zoneOne = player.getX() + zoneWidth;
+                        int zoneTwo = zoneOne + zoneWidth;
 
-                    if (b.getX() < zoneOne) {
-                        b.setXVel(-3);
-                    } else if (b.getX() < zoneTwo) {
-                        b.setXVel(3);
-                    } else {
-                        b.setXVel(3);
+                        if (b.getX() < zoneOne) {
+                            b.setXVel(-3);
+                        } else if (b.getX() < zoneTwo) {
+                            b.setXVel(3);
+                        } else {
+                            b.setXVel(3);
+                        }
                     }
                 }
+                if (b.getY() > 600) {
+                    balls.remove(i);
+                    isDead = true;
+                }
             }
-            if (b.getY() > 600) {
-                balls.remove(i);
-                isDead = true;
-            }
-
         }
 
     }
@@ -94,14 +96,18 @@ public class Game implements Runnable, KeyListener {
         }
         g = bs.getDrawGraphics();
         g.setColor(Color.black);
-        g.fillRect(0, 0, WIDTH, HEIGHT);
+        g.drawImage(Assets.background, 0, 0, WIDTH, HEIGHT, null);
         // Start Draw
-        player.render(g);
-        for (Brick b : bricks) {
-            b.render(g);
-        }
-        for (Ball b : balls) {
-            b.render(g);
+        if (isMenu) {
+
+        } else {
+            player.render(g);
+            for (Brick b : bricks) {
+                b.render(g);
+            }
+            for (Ball b : balls) {
+                b.render(g);
+            }
         }
         // End Draw
         bs.show();
@@ -189,9 +195,12 @@ public class Game implements Runnable, KeyListener {
     }
 
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+        if (isMenu) {
+            isMenu = false;
+        } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             if (lives >= 0 && isDead) {
                 lives--;
+                isDead = false;
                 balls.add(new Ball(player));
             }
         }
