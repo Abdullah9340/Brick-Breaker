@@ -280,7 +280,7 @@ public class Game implements Runnable, KeyListener {
     private void setUpBricks() {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 14; j++) {
-                bricks.add(new Brick(50 * j + 4 * j, 50 * i + 4 * i, 50, 50, 1));
+                bricks.add(new Brick(50 * j + 4 * j, 50 * i + 4 * i, 50, 50, 3));
             }
         }
     }
