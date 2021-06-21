@@ -3,6 +3,7 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 
 public class Game implements Runnable, KeyListener {
@@ -13,11 +14,13 @@ public class Game implements Runnable, KeyListener {
     // Variables for graphics objects
     private Graphics g;
     private BufferStrategy bs;
+    private Font f = new Font("Arial", Font.BOLD, 32);
 
+    // Variables for the game
     private String title;
     private int WIDTH, HEIGHT, FPS = 60;
     private boolean running = false;
-    private boolean isDead = true, isMenu = true;
+    private boolean isDead = true, isMenu = true, isGameOver = false;
     private int lives = 3;
 
     private Thread thread;
@@ -27,6 +30,7 @@ public class Game implements Runnable, KeyListener {
     private ArrayList<Brick> bricks;
     private ArrayList<Ball> balls;
     private BallBricksCollision collisionCheck;
+    private ArrayList<Powerups> powerups;
 
     /*-
     * Game() 
@@ -42,13 +46,24 @@ public class Game implements Runnable, KeyListener {
         this.start(); // Start the thread/game
     }
 
+    /*-
+    * void update()
+    * Description: This moves each object and checks for collisions
+    * Pre : None
+    * Post: none
+    */
     public void update() {
-        if (!isMenu) {
-            player.update();
+        // If you are not in the menu state and not in the gameover state update the
+        // game
+        if (!isMenu && !isGameOver) {
+            player.update(); // Update the player
+            // Loop through each of the balls
             for (int i = balls.size() - 1; i >= 0; i--) {
                 Ball b = balls.get(i);
-                b.update();
-                collisionCheck.checkCollisions(bricks, b, player);
+                b.update(); // Update each ball
+                // Check brick collision
+                collisionCheck.checkCollisions(bricks, b, player, powerups);
+                // If the ball hits the left wall
                 if (b.getX() < 0) {
                     b.setXVel();
                 }
@@ -64,24 +79,54 @@ public class Game implements Runnable, KeyListener {
                 // Hits Player paddle
                 if (b.getX() >= player.getX() && b.getX() <= player.getX() + player.getWidth()) {
                     if (b.getY() + b.getHeight() == player.getY() + 20) {
-                        b.setYVel();
+                        b.setYVel(); // Reverse Y velocity
+                        // This zone width is used to determine which side the ball hit the paddle
                         int zoneWidth = player.getWidth() / 2;
                         int zoneOne = player.getX() + zoneWidth;
                         int zoneTwo = zoneOne + zoneWidth;
 
-                        if (b.getX() < zoneOne) {
+                        if (b.getX() < zoneOne) { // On the right side make the ball go to the right side
                             b.setXVel(-3);
-                        } else if (b.getX() < zoneTwo) {
+                        } else if (b.getX() < zoneTwo) { // Go to the left side
                             b.setXVel(3);
                         } else {
                             b.setXVel(3);
                         }
                     }
                 }
-                if (b.getY() > 600) {
-                    balls.remove(i);
-                    isDead = true;
+                if (b.getY() > 600) { // If the ball falls off the screen
+                    balls.remove(i); // Remove it
+                    isDead = true; // Allow player to spawn another ball if they have lives
+                    if (lives == 0) { // If they dont the game is over
+                        isGameOver = true;
+                    }
                 }
+            }
+            for (int i = powerups.size() - 1; i >= 0; i--) { // Loop through each of the powerups
+                powerups.get(i).update(); // Update each one
+                // Check if it collides with the player paddle
+                if (powerups.get(i).getX() >= player.getX()
+                        && powerups.get(i).getX() <= player.getX() + player.getWidth()) {
+                    if (powerups.get(i).getY() + 25 >= player.getY()
+                            && powerups.get(i).getY() <= player.getY() + player.getHeight()) {
+                        // Find which powerup was hit
+                        switch (powerups.get(i).getPowerUpType()) {
+                            case 0:
+                                addThreeBalls(); // Add three balls
+                                break;
+                            case 1:
+                                lives++; // Add another live
+                                break;
+                            default:
+                                break;
+
+                        }
+                        powerups.remove(powerups.get(i)); // Remove the powerup
+                    }
+                }
+            }
+            if (bricks.size() == 0) { // If no bricks left the game is over
+                isGameOver = true;
             }
         }
 
@@ -96,11 +141,20 @@ public class Game implements Runnable, KeyListener {
         }
         g = bs.getDrawGraphics();
         g.setColor(Color.black);
-        g.drawImage(Assets.background, 0, 0, WIDTH, HEIGHT, null);
         // Start Draw
+        // If you are in the menu
         if (isMenu) {
-
-        } else {
+            g.clearRect(0, 0, WIDTH, HEIGHT);
+            g.drawString("Press Any Key to Start", WIDTH / 2, HEIGHT / 2);
+        } else if (isGameOver) { // If the game is over
+            g.clearRect(0, 0, WIDTH, HEIGHT);
+            if (bricks.size() == 0) {
+                g.drawString("Game Won", WIDTH / 2, HEIGHT / 2);
+            } else {
+                g.drawString("You Lost", WIDTH / 2, HEIGHT / 2);
+            }
+        } else { // Otherwise draw all the game assets
+            g.drawImage(Assets.background, 0, 0, WIDTH, HEIGHT, null);
             player.render(g);
             for (Brick b : bricks) {
                 b.render(g);
@@ -108,12 +162,40 @@ public class Game implements Runnable, KeyListener {
             for (Ball b : balls) {
                 b.render(g);
             }
+            for (Powerups p : powerups) {
+                p.render(g);
+            }
+            g.setFont(f);
+            g.setColor(Color.magenta);
+            g.drawString("Lives: " + lives, 660, 580);
         }
         // End Draw
         bs.show();
         g.dispose();
     }
 
+    /*-
+        void addThreeBalls()
+        Description: Add three balls for each ball you currently have
+        pre: none
+        post: none
+    */
+    public void addThreeBalls() {
+        int size = balls.size();
+        for (int i = 0; i < size; i++) {
+            balls.add(new Ball(balls.get(i).getX(), balls.get(i).getY()));
+            balls.add(new Ball(balls.get(i).getX(), balls.get(i).getY()));
+            balls.add(new Ball(balls.get(i).getX(), balls.get(i).getY()));
+        }
+
+    }
+
+    /*-
+        void init()
+        Description: Sets up the variables and assets
+        pre: none 
+        post: none
+    */
     public void init() {
         display = new Display(title, WIDTH, HEIGHT);
         Assets.init();
@@ -124,8 +206,15 @@ public class Game implements Runnable, KeyListener {
         display.getJFrame().addKeyListener(player);
         display.getJFrame().addKeyListener(this);
         collisionCheck = new BallBricksCollision();
+        powerups = new ArrayList<Powerups>();
     }
 
+    /*-
+        void run()
+        Description: Runs the game
+        pre: none
+        post: none
+    */
     public void run() {
         init();
         timePerTick = 1000000000 / FPS;
@@ -182,10 +271,16 @@ public class Game implements Runnable, KeyListener {
         }
     }
 
+    /*-
+        void setUpBricks()
+        description: set up the bricks
+        pre: none
+        post: none
+    */
     private void setUpBricks() {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 14; j++) {
-                bricks.add(new Brick(50 * j + 4 * j, 50 * i + 4 * i, 50, 50, 3));
+                bricks.add(new Brick(50 * j + 4 * j, 50 * i + 4 * i, 50, 50, 1));
             }
         }
     }
@@ -194,14 +289,21 @@ public class Game implements Runnable, KeyListener {
 
     }
 
+    /*-
+        void keyPressed()
+        description: check for keys pressed
+        pre: none
+        post: none
+    */
     public void keyPressed(KeyEvent e) {
         if (isMenu) {
             isMenu = false;
-        } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+        } else if (e.getKeyCode() == KeyEvent.VK_SPACE) { // Spawn ball if possible
             if (lives >= 0 && isDead) {
                 lives--;
                 isDead = false;
-                balls.add(new Ball(player));
+                balls.add((new Ball(player.getX() + (player.getWidth() / 2), player.getY())));
+                balls.get(balls.size() - 1).setXVel(0);
             }
         }
     }

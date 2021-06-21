@@ -4,11 +4,21 @@ import java.util.ArrayList;
 
 public class BallBricksCollision {
 
-    public void checkCollisions(ArrayList<Brick> bricks, Ball ball, Player player) {
+    public void checkCollisions(ArrayList<Brick> bricks, Ball ball, Player player, ArrayList<Powerups> powerups) {
         for (int i = bricks.size() - 1; i >= 0; i--) {
             checkCollision(ball, bricks.get(i), player);
             if (bricks.get(i).getDurability() == 0) {
                 bricks.remove(i);
+                // Chance for powerup to spawn
+                int chance = (int) (Math.random() * 100) + 1;
+                // 30 % Chance for a power up to spawn
+                if (chance <= 30) {
+                    if (chance <= 15) {
+                        powerups.add(new Powerups(ball.getX(), ball.getY(), 0));
+                    } else {
+                        powerups.add(new Powerups(ball.getX(), ball.getY(), 1));
+                    }
+                }
             }
         }
     }
