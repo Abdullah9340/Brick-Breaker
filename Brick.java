@@ -1,9 +1,10 @@
-import java.awt.Graphics;
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 
 public class Brick {
     private int x, y, width, height, durability;
-    private Color c;
+    private BufferedImage img;
 
     public Brick(int x, int y, int width, int height, int durability) {
         this.x = x;
@@ -17,13 +18,13 @@ public class Brick {
     public void setColor() {
         switch (durability) {
             case 3:
-                c = Color.RED;
+                img = Assets.threeDurBrick;
                 break;
             case 2:
-                c = Color.GREEN;
+                img = Assets.twoDurBrick;
                 break;
             case 1:
-                c = Color.GRAY;
+                img = Assets.oneDurBrick;
                 break;
         }
     }
@@ -53,10 +54,7 @@ public class Brick {
     }
 
     public void render(Graphics g) {
-        g.setColor(c);
-        g.fillRect(x, y, width, height);
-        g.setColor(Color.black);
-        g.drawRect(x, y, width, height);
+        g.drawImage(img, x, y, width, height, null);
     }
 
 }

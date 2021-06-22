@@ -1,5 +1,4 @@
 import java.awt.Graphics;
-import java.awt.Color;
 
 public class Powerups {
     public static String[] powerUpTypes = { "Plus 3 Balls", "Extra Life" };
@@ -14,8 +13,11 @@ public class Powerups {
     }
 
     public void render(Graphics g) {
-        g.setColor(Color.blue);
-        g.fillOval(x, y, 25, 25);
+        if (powerUpType == 1) {
+            g.drawImage(Assets.heart, x, y, 36, 36, null);
+        } else if (powerUpType == 0) {
+            g.drawImage(Assets.timesThreeBall, x, y, 36, 36, null);
+        }
     }
 
     public void update() {

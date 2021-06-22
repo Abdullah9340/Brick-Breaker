@@ -14,7 +14,7 @@ public class Game implements Runnable, KeyListener {
     // Variables for graphics objects
     private Graphics g;
     private BufferStrategy bs;
-    private Font f = new Font("Arial", Font.BOLD, 32);
+    private Font f = new Font("Papyrus", Font.BOLD, 32);
 
     // Variables for the game
     private String title;
@@ -140,18 +140,24 @@ public class Game implements Runnable, KeyListener {
             return;
         }
         g = bs.getDrawGraphics();
-        g.setColor(Color.black);
+        g.setColor(Color.red);
         // Start Draw
         // If you are in the menu
         if (isMenu) {
             g.clearRect(0, 0, WIDTH, HEIGHT);
-            g.drawString("Press Any Key to Start", WIDTH / 2, HEIGHT / 2);
+            g.drawImage(Assets.gameStart, 0, 0, 800, 600, null);
+            g.setFont(f);
+            g.setColor(Color.black);
+            g.drawString("Press Any Key To Start", (WIDTH / 2) - 200, (HEIGHT / 2) + 50);
         } else if (isGameOver) { // If the game is over
             g.clearRect(0, 0, WIDTH, HEIGHT);
+            g.setColor(Color.white);
+            g.drawImage(Assets.gameEnd, 0, 0, 800, 600, null);
+            g.setFont(f);
             if (bricks.size() == 0) {
-                g.drawString("Game Won", WIDTH / 2, HEIGHT / 2);
+                g.drawString("You Won", (WIDTH / 2) - 70, (HEIGHT / 2) + 50);
             } else {
-                g.drawString("You Lost", WIDTH / 2, HEIGHT / 2);
+                g.drawString("You Lost", (WIDTH / 2) - 70, (HEIGHT / 2) + 50);
             }
         } else { // Otherwise draw all the game assets
             g.drawImage(Assets.background, 0, 0, WIDTH, HEIGHT, null);
@@ -165,9 +171,10 @@ public class Game implements Runnable, KeyListener {
             for (Powerups p : powerups) {
                 p.render(g);
             }
-            g.setFont(f);
-            g.setColor(Color.magenta);
-            g.drawString("Lives: " + lives, 660, 580);
+            for (int i = 0; i < lives; i++) {
+                g.drawImage(Assets.heart, 24 + (i * 36), 530, 42, 42, null);
+            }
+
         }
         // End Draw
         bs.show();
@@ -278,9 +285,9 @@ public class Game implements Runnable, KeyListener {
         post: none
     */
     private void setUpBricks() {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 14; j++) {
-                bricks.add(new Brick(50 * j + 4 * j, 50 * i + 4 * i, 50, 50, 3));
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 12; j++) {
+                bricks.add(new Brick((60 * j + 4 * j) + 20, (24 * i + 4 * i) + 10, 60, 24, 3));
             }
         }
     }
