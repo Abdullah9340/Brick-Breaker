@@ -9,15 +9,19 @@ public class BallBricksCollision {
             checkCollision(ball, bricks.get(i), player);
             if (bricks.get(i).getDurability() == 0) {
                 bricks.remove(i);
+                Music.genericNoise("Assets/breakingsound.wav");
                 // Chance for powerup to spawn
                 int chance = (int) (Math.random() * 100) + 1;
                 // 30 % Chance for a power up to spawn
                 if (chance <= 30) {
-                    if (chance <= 15) {
+                    if (chance <= 10) {
                         powerups.add(new Powerups(ball.getX(), ball.getY(), 0));
-                    } else {
+                    } else if (chance <= 20) {
                         powerups.add(new Powerups(ball.getX(), ball.getY(), 1));
+                    } else {
+                        powerups.add(new Powerups(ball.getX(), ball.getY(), 2));
                     }
+
                 }
             }
         }

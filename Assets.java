@@ -3,7 +3,7 @@ import java.awt.image.BufferedImage;
 public class Assets {
     public static BufferedImage threeDurBrick, twoDurBrick, oneDurBrick;
     public static BufferedImage playerPad;
-    public static BufferedImage ball, heart, timesThreeBall;
+    public static BufferedImage ball, heart, timesThreeBall, mushroom;
     public static BufferedImage background, gameEnd, gameStart;
 
     public static void init() {
@@ -17,5 +17,6 @@ public class Assets {
         gameEnd = ImageLoader.loadImage("Assets/end.png");
         gameStart = ImageLoader.loadImage("Assets/start.png");
         timesThreeBall = ImageLoader.loadImage("Assets/threeBallPowerUp.png");
+        mushroom = ImageLoader.loadImage("Assets/mushroom.jpg");
     }
 }

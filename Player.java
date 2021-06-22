@@ -2,8 +2,8 @@ import java.awt.Graphics;
 import java.awt.event.*;
 
 public class Player implements KeyListener {
-    private int x, y, width, height, speed;
-    private boolean moving;
+    private int x, y, width, height, speed, framesPassed = 0;
+    private boolean moving, isWide = false;
 
     public Player() {
         x = 400;
@@ -16,9 +16,18 @@ public class Player implements KeyListener {
 
     public void render(Graphics g) {
         g.drawImage(Assets.playerPad, x, y, width, height, null);
+
     }
 
     public void update() {
+        if (isWide) {
+            framesPassed++;
+            if (framesPassed == 600) {
+                isWide = false;
+                framesPassed = 0;
+                width = 180;
+            }
+        }
         if (moving) {
             this.x += speed;
         }
@@ -52,6 +61,14 @@ public class Player implements KeyListener {
 
     public int getHeight() {
         return height;
+    }
+
+    public void setWide(boolean isWide) {
+        if (isWide) {
+            framesPassed = 0;
+        }
+        this.isWide = isWide;
+        width = 280;
     }
 
     @Override

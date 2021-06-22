@@ -84,7 +84,7 @@ public class Game implements Runnable, KeyListener {
                         int zoneWidth = player.getWidth() / 2;
                         int zoneOne = player.getX() + zoneWidth;
                         int zoneTwo = zoneOne + zoneWidth;
-
+                        Music.genericNoise("Assets/paddle_hit.wav");
                         if (b.getX() < zoneOne) { // On the right side make the ball go to the right side
                             b.setXVel(-3);
                         } else if (b.getX() < zoneTwo) { // Go to the left side
@@ -96,9 +96,12 @@ public class Game implements Runnable, KeyListener {
                 }
                 if (b.getY() > 600) { // If the ball falls off the screen
                     balls.remove(i); // Remove it
-                    isDead = true; // Allow player to spawn another ball if they have lives
-                    if (lives == 0) { // If they dont the game is over
-                        isGameOver = true;
+                    Music.genericNoise("Assets/deathlaugh.wav");
+                    if (balls.size() == 0) {
+                        isDead = true; // Allow player to spawn another ball if they have lives
+                        if (lives == 0) { // If they dont the game is over
+                            isGameOver = true;
+                        }
                     }
                 }
             }
@@ -116,6 +119,9 @@ public class Game implements Runnable, KeyListener {
                                 break;
                             case 1:
                                 lives++; // Add another live
+                                break;
+                            case 2:
+                                player.setWide(true);
                                 break;
                             default:
                                 break;
@@ -204,6 +210,7 @@ public class Game implements Runnable, KeyListener {
         post: none
     */
     public void init() {
+        Music.backgroundMusic();
         display = new Display(title, WIDTH, HEIGHT);
         Assets.init();
         player = new Player();

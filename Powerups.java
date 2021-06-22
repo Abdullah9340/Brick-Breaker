@@ -1,7 +1,7 @@
 import java.awt.Graphics;
 
 public class Powerups {
-    public static String[] powerUpTypes = { "Plus 3 Balls", "Extra Life" };
+    public static String[] powerUpTypes = { "Plus 3 Balls", "Extra Life", "Wide Paddle" };
     private int x, y, speed;
     private int powerUpType;
 
@@ -17,7 +17,10 @@ public class Powerups {
             g.drawImage(Assets.heart, x, y, 36, 36, null);
         } else if (powerUpType == 0) {
             g.drawImage(Assets.timesThreeBall, x, y, 36, 36, null);
+        } else if (powerUpType == 2) {
+            g.drawImage(Assets.mushroom, x, y, 36, 36, null);
         }
+
     }
 
     public void update() {
